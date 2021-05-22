@@ -3,11 +3,8 @@ package com.nordiws.calculadora;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-
-import java.util.regex.Pattern;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -37,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
     Button reminderBtn;
 
     // variáveis de controle das equações.
-    Float valueOne, valueTwo;
+    Float valueOne, valueTwo = null;
     String currentEquation;
     Boolean calculatorState;
     Boolean isSecondValue;
@@ -81,74 +78,74 @@ public class MainActivity extends AppCompatActivity {
                 displayView.setText("");
                 calculatorState = true;
             }
-            displayView.setText(displayView.getText() + "0");
+            displayView.setText(String.format("%s0", displayView.getText()));
         });
         oneBtn.setOnClickListener(v -> {
             if (!calculatorState) {
                 displayView.setText("");
                 calculatorState = true;
             }
-            displayView.setText(displayView.getText() + "1");
+            displayView.setText(String.format("%s1", displayView.getText()));
         });
         twoBtn.setOnClickListener(v -> {
             if (!calculatorState) {
                 displayView.setText("");
                 calculatorState = true;
             }
-            displayView.setText(displayView.getText() + "2");
+            displayView.setText(String.format("%s2", displayView.getText()));
         });
         threeBtn.setOnClickListener(v -> {
             if (!calculatorState) {
                 displayView.setText("");
                 calculatorState = true;
             }
-            displayView.setText(displayView.getText() + "3");
+            displayView.setText(String.format("%s3", displayView.getText()));
         });
         fourBtn.setOnClickListener(v -> {
             if (!calculatorState) {
                 displayView.setText("");
                 calculatorState = true;
             }
-            displayView.setText(displayView.getText() + "4");
+            displayView.setText(String.format("%s4", displayView.getText()));
         });
         fiveBtn.setOnClickListener(v -> {
             if (!calculatorState) {
                 displayView.setText("");
                 calculatorState = true;
             }
-            displayView.setText(displayView.getText() + "5");
+            displayView.setText(String.format("%s5", displayView.getText()));
         });
         sixBtn.setOnClickListener(v -> {
             if (!calculatorState) {
                 displayView.setText("");
                 calculatorState = true;
             }
-            displayView.setText(displayView.getText() + "6");
+            displayView.setText(String.format("%s6", displayView.getText()));
         });
         sevenBtn.setOnClickListener(v -> {
             if (!calculatorState) {
                 displayView.setText("");
                 calculatorState = true;
             }
-            displayView.setText(displayView.getText() + "7");
+            displayView.setText(String.format("%s7", displayView.getText()));
         });
         eightBtn.setOnClickListener(v -> {
             if (!calculatorState) {
                 displayView.setText("");
                 calculatorState = true;
             }
-            displayView.setText(displayView.getText() + "8");
+            displayView.setText(String.format("%s8", displayView.getText()));
         });
         nineBtn.setOnClickListener(v -> {
             if (!calculatorState) {
                 displayView.setText("");
                 calculatorState = true;
             }
-            displayView.setText(displayView.getText() + "9");
+            displayView.setText(String.format("%s9", displayView.getText()));
         });
         dotBtn.setOnClickListener(v -> {
-            if (displayView != null) {
-                displayView.setText(displayView.getText() + ".");
+            if (calculatorState) {
+                displayView.setText(String.format("%s.", displayView.getText()));
             } else {
                 displayView.setText("0.");
             }
@@ -158,16 +155,15 @@ public class MainActivity extends AppCompatActivity {
         // Configuração dos listeners para limpar e deletar um caractere
         clearBtn.setOnClickListener(v -> {
             displayView.setText("0");
-            calculatorState = false;
-            currentEquation = null;
+            resetState();
         });
         backSpaceBtn.setOnClickListener(v -> {
             StringBuffer sb = new StringBuffer(displayView.getText());
-            if(sb.length() <= 1){
+            if (sb.length() <= 1) {
                 displayView.setText("0");
                 calculatorState = false;
             } else {
-                sb.deleteCharAt(sb.length()-1);
+                sb.deleteCharAt(sb.length() - 1);
                 displayView.setText(sb);
             }
 
@@ -175,84 +171,177 @@ public class MainActivity extends AppCompatActivity {
 
         //Configuração dos listeners das equações
         plusBtn.setOnClickListener(v -> {
-            valueOne = Float.parseFloat(displayView.getText().toString());
-            currentEquation = "plus";
-            displayView.setText(displayView.getText() + " +");
-            calculatorState = false;
+            if (!isSecondValue) {
+                valueOne = Float.parseFloat(displayView.getText().toString());
+                currentEquation = "addition";
+                displayView.setText(String.format("%s +", displayView.getText()));
+                calculatorState = false;
+                isSecondValue = true;
+            } else {
+                String testValueTwo = displayView.getText().toString();
+                if (testValueTwo.matches("^\\d+(\\.\\d+)*$")) {
+                    valueTwo = Float.parseFloat(testValueTwo);
+                } else {
+                    valueTwo = 0f;
+                }
+                valueOne = calculate(valueOne, valueTwo);
+                displayView.setText(String.format("%s +", valueOne));
+                valueTwo = null;
+                calculatorState = false;
+                currentEquation = "addition";
+                displayView.setText(checkForDecimals(valueOne));
+            }
         });
         minusBtn.setOnClickListener(v -> {
-            valueOne = Float.parseFloat(displayView.getText().toString());
-            currentEquation = "minus";
-            displayView.setText(displayView.getText() + " -");
-            calculatorState = false;
+            if(!isSecondValue){
+                valueOne = Float.parseFloat(displayView.getText().toString());
+                currentEquation = "subtraction";
+                displayView.setText(String.format("%s -", displayView.getText()));
+                calculatorState = false;
+                isSecondValue = true;
+            } else {
+                String testValueTwo = displayView.getText().toString();
+                if (testValueTwo.matches("^\\d+(\\.\\d+)*$")) {
+                    valueTwo = Float.parseFloat(testValueTwo);
+                } else {
+                    valueTwo = 0f;
+                }
+                valueOne = calculate(valueOne, valueTwo);
+                displayView.setText(String.format("%s -", valueOne));
+                valueTwo = null;
+                calculatorState = false;
+                currentEquation = "subtraction";
+                displayView.setText(checkForDecimals(valueOne));
+            }
         });
         multiplicationBtn.setOnClickListener(v -> {
-            valueOne = Float.parseFloat(displayView.getText().toString());
-            currentEquation = "multiplication";
-            displayView.setText(displayView.getText() + " x");
-            calculatorState = false;
+            if(!isSecondValue){
+                valueOne = Float.parseFloat(displayView.getText().toString());
+                currentEquation = "multiplication";
+                displayView.setText(String.format("%s x", displayView.getText()));
+                calculatorState = false;
+                isSecondValue = true;
+            } else {
+                String testValueTwo = displayView.getText().toString();
+                if (testValueTwo.matches("^\\d+(\\.\\d+)*$")) {
+                    valueTwo = Float.parseFloat(testValueTwo);
+                } else {
+                    valueTwo = 0f;
+                }
+                valueOne = calculate(valueOne, valueTwo);
+                displayView.setText(String.format("%s x", valueOne));
+                valueTwo = null;
+                calculatorState = false;
+                currentEquation = "multiplication";
+                displayView.setText(checkForDecimals(valueOne));
+            }
         });
         divisionBtn.setOnClickListener(v -> {
-            valueOne = Float.parseFloat(displayView.getText().toString());
-            currentEquation = "division";
-            displayView.setText(displayView.getText() + " /");
-            calculatorState = false;
+            if(!isSecondValue){
+                valueOne = Float.parseFloat(displayView.getText().toString());
+                currentEquation = "division";
+                displayView.setText(String.format("%s ÷", displayView.getText()));
+                calculatorState = false;
+                isSecondValue = true;
+            } else {
+                String testValueTwo = displayView.getText().toString();
+                if (testValueTwo.matches("^\\d+(\\.\\d+)*$")) {
+                    valueTwo = Float.parseFloat(testValueTwo);
+                } else {
+                    valueTwo = 0f;
+                }
+                valueOne = calculate(valueOne, valueTwo);
+                displayView.setText(String.format("%s ÷", valueOne));
+                valueTwo = null;
+                calculatorState = false;
+                currentEquation = "division";
+                displayView.setText(checkForDecimals(valueOne));
+            }
         });
         reminderBtn.setOnClickListener(v -> {
-            valueOne = Float.parseFloat(displayView.getText().toString());
-            currentEquation = "reminder";
-            displayView.setText(displayView.getText() + " %");
-            calculatorState = false;
+            if(!isSecondValue){
+                valueOne = Float.parseFloat(displayView.getText().toString());
+                currentEquation = "reminder";
+                displayView.setText(String.format("%s %%", displayView.getText()));
+                calculatorState = false;
+                isSecondValue = true;
+            } else {
+                String testValueTwo = displayView.getText().toString();
+                if (testValueTwo.matches("^\\d+(\\.\\d+)*$")) {
+                    valueTwo = Float.parseFloat(testValueTwo);
+                } else {
+                    valueTwo = 0f;
+                }
+                valueOne = calculate(valueOne, valueTwo);
+                displayView.setText(String.format("%s %%", valueOne));
+                valueTwo = null;
+                calculatorState = false;
+                currentEquation = "reminder";
+                displayView.setText(checkForDecimals(valueOne));
+            }
         });
 
         // Configuração do listener de resultado e cálculo das equações
         equalBtn.setOnClickListener(v -> {
-            // Verifica se não foi inserido nenhum valor
-            if(valueOne == null){
-                displayView.setText("0");
-                resetState();
-                return;
-            }
-
-            // verifica se não foi inserido o segundo valor
-            if (displayView.getText().toString().matches("^\\d+(\\.\\d+)*$")){
-                valueTwo = Float.parseFloat(displayView.getText().toString());
-            } else {
-                valueTwo = 0f;
-            }
-
-            switch (currentEquation){
-                case "plus":
-                    displayView.setText(String.valueOf((int) (valueOne + valueTwo)));
-                    resetState();
-                    break;
-                case "minus":
-                    displayView.setText(String.valueOf((int) (valueOne - valueTwo)));
-                    resetState();
-                    break;
-                case "multiplication":
-                    displayView.setText(String.valueOf((int) (valueOne * valueTwo)));
-                    resetState();
-                    break;
-                case "division":
-                    displayView.setText(String.valueOf(valueOne / valueTwo));
-                    resetState();
-                    break;
-                case  "reminder":
-                    displayView.setText(String.valueOf(valueOne % valueTwo));
-                    resetState();
-                    break;
-                default:
-                    displayView.setText("0");
-                    resetState();
-            }
+            valueTwo = Float.parseFloat(displayView.getText().toString());
+            displayView.setText(checkForDecimals(calculate(valueOne, valueTwo)));
+            resetState();
         });
     }
 
-    private void resetState(){
+    private float calculate(Float value1, Float value2) {
+
+        float result;
+
+        // Verifica se não foi inserido nenhum valor
+        if (value1 == null) {
+            return 0f;
+        }
+
+        // Verifica se não foi inserido o segundo valor
+        if (value2 == null) {
+            value2 = 0f;
+        }
+
+        // Efetua os calculos conforme a operação selecionada
+        switch (currentEquation) {
+            case "addition":
+                result = value1 + value2;
+                break;
+            case "subtraction":
+                result = value1 - value2;
+                break;
+            case "multiplication":
+                result = value1 * value2;
+                break;
+            case "division":
+                result = value1 / value2;
+                break;
+            case "reminder":
+                result = value1 % value2;
+                break;
+            default:
+                result = 0f;
+        }
+        return result;
+    }
+
+    // Reinicializa as variaveis de estado
+    private void resetState() {
         currentEquation = null;
         calculatorState = false;
         valueOne = null;
         valueTwo = null;
+        isSecondValue = false;
+    }
+
+    // Verifica se o resultado e um numero enteiro, converte ele para integer e devolve uma String
+    private String checkForDecimals(float number) {
+        int result;
+        if (number % 1 == 0) {
+            result = (int) number;
+            return Integer.toString(result);
+        }
+            return String.valueOf(number);
     }
 }

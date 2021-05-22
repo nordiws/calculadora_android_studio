@@ -218,9 +218,9 @@
         android:layout_marginTop="50dp"
         android:layout_marginEnd="23dp"
         android:backgroundTint="#ADB4B5"
-        android:text="%"
+        android:text="mod"
         android:textColor="#000000"
-        android:textSize="24sp"
+        android:textSize="10sp"
         app:layout_constraintEnd_toStartOf="@+id/divisionBtn"
         app:layout_constraintStart_toEndOf="@+id/backSpaceBtn"
         app:layout_constraintTop_toBottomOf="@+id/displayView" />
